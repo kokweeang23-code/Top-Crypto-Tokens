@@ -397,35 +397,13 @@ export default function App() {
             )}
 
             {/* Disqus Community Discussion Section */}
-            <div className="mt-12 bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 sm:p-8 backdrop-blur-sm">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
-                <div>
-                  <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                    <span>Market Discussion & Insights</span>
-                    <span className="text-xs font-normal text-cyan-400 bg-cyan-950/60 border border-cyan-800/60 px-2 py-0.5 rounded-full">
-                      Community
-                    </span>
-                  </h2>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Share your trading perspective, market breadth analysis, and token liquidity thoughts.
-                  </p>
-                </div>
-                <div className="text-xs font-medium text-slate-400 bg-slate-950/70 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>Live Discussion</span>
-                </div>
-              </div>
-
-              <div className="min-h-[280px]">
-                <DisqusComments
-                  shortname="top-crypto-tokens"
-                  url={typeof window !== 'undefined' ? window.location.href : 'https://top-crypto-tokens-pqvo.vercel.app/'}
-                  identifier="crypto-pulse-main-dashboard"
-                  title="Crypto Pulse - Top 10 Non-Stablecoins by Volume"
-                  language="zh_TW"
-                />
-              </div>
-            </div>
+            <DisqusComments
+              shortname="top-crypto-tokens"
+              url="https://top-crypto-tokens-pqvo.vercel.app/"
+              identifier="crypto-pulse-main-dashboard"
+              title="Crypto Pulse - Top 10 Non-Stablecoins by Volume"
+              language="en_US"
+            />
           </>
         )}
 
