@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 // @ts-ignore
 import { DiscussionEmbed, CommentCount } from 'disqus-react';
-import { MessageSquare, MessageCircle, Sparkles, ExternalLink } from 'lucide-react';
+import { MessageSquare, MessageCircle, Sparkles } from 'lucide-react';
 
 interface ArticleData {
   url: string;
@@ -13,13 +13,30 @@ interface TalkToUsProps {
   article?: ArticleData;
 }
 
-export const TalkToUsView: React.FC<TalkToUsProps> = ({
-  article = {
-    url: typeof window !== 'undefined' ? window.location.href : 'https://top-crypto-tokens-pqvo.vercel.app/',
-    id: 'crypto-pulse-talk-to-us',
-    title: 'Talk to Us - Top Crypto Tokens',
-  },
+const DEFAULT_ARTICLE: ArticleData = {
+  url: 'https://top-crypto-tokens-pqvo.vercel.app/',
+  id: 'crypto-pulse-talk-to-us',
+  title: 'Talk to Us - Top Crypto Tokens',
+};
+
+export const TalkToUsView: React.FC<TalkToUsProps> = React.memo(({
+  article = DEFAULT_ARTICLE,
 }) => {
+  const currentArticle = article || DEFAULT_ARTICLE;
+
+  const discussionConfig = useMemo(() => ({
+    url: currentArticle.url,
+    identifier: currentArticle.id,
+    title: currentArticle.title,
+    language: 'en',
+  }), [currentArticle.url, currentArticle.id, currentArticle.title]);
+
+  const commentCountConfig = useMemo(() => ({
+    url: currentArticle.url,
+    identifier: currentArticle.id,
+    title: currentArticle.title,
+  }), [currentArticle.url, currentArticle.id, currentArticle.title]);
+
   return (
     <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl text-slate-900 mt-2">
       {/* Header & Badges */}
@@ -37,11 +54,7 @@ export const TalkToUsView: React.FC<TalkToUsProps> = ({
           <MessageCircle className="w-3.5 h-3.5 text-cyan-600" />
           <CommentCount
             shortname="top-crypto-tokens"
-            config={{
-              url: article.url,
-              identifier: article.id,
-              title: article.title,
-            }}
+            config={commentCountConfig}
           >
             {/* Placeholder Text */}
             Comments
@@ -62,39 +75,28 @@ export const TalkToUsView: React.FC<TalkToUsProps> = ({
         </p>
       </div>
 
-      {/* Action Bar with Forum ID and Link */}
-      <div className="mt-4 p-3 sm:p-3.5 bg-white border border-slate-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+      {/* Forum Info Bar */}
+      <div className="mt-4 p-3 sm:p-3.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center gap-2 text-xs text-slate-700">
           <Sparkles className="w-4 h-4 text-slate-500" />
           <span>
             Disqus Forum ID:{' '}
-            <span className="font-mono text-slate-400 font-medium">top-crypto-tokens</span>
+            <span className="font-mono text-slate-600 font-semibold">top-crypto-tokens</span>
           </span>
         </div>
-
-        <a
-          href="https://disqus.com/home/forums/top-crypto-tokens/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-3.5 py-1.5 bg-[#131722] hover:bg-black text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs w-fit"
-        >
-          <span>Open in Disqus</span>
-          <ExternalLink className="w-3 h-3" />
-        </a>
+        <span className="text-[11px] text-emerald-600 font-semibold bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+          Live Embedded Forum
+        </span>
       </div>
 
       {/* Embedded Disqus Forum */}
-      <div className="mt-6 min-h-[300px] w-full">
+      <div className="mt-6 min-h-[350px] w-full">
         <DiscussionEmbed
           shortname="top-crypto-tokens"
-          config={{
-            url: article.url,
-            identifier: article.id,
-            title: article.title,
-            language: 'en',
-          }}
+          config={discussionConfig}
         />
       </div>
     </section>
   );
-};
+});
+
