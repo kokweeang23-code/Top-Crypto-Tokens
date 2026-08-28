@@ -73,7 +73,7 @@ export const TalkToUsView: React.FC<TalkToUsProps> = ({
         </div>
 
         <a
-          href="https://top-crypto-tokens.disqus.com"
+          href="https://disqus.com/home/forums/top-crypto-tokens/"
           target="_blank"
           rel="noopener noreferrer"
           className="px-3.5 py-1.5 bg-[#131722] hover:bg-black text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs w-fit"
