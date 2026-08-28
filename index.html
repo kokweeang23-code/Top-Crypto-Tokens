@@ -11,7 +11,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <script>
       (function() {
-        // Prevent browser extension wallet injection collision (e.g. Zerion / MetaMask redefining Object.defineProperty on window.ethereum)
+        // Prevent browser extension wallet injection collision and suppress cross-origin 3rd-party script noise in sandboxed iframes
         try {
           const origDefineProperty = Object.defineProperty;
           Object.defineProperty = function(obj, prop, descriptor) {
@@ -23,7 +23,6 @@
                 String(prop).includes('ethereum') ||
                 String(err?.message || '').includes('Cannot redefine property')
               ) {
-                // Return obj safely without throwing error
                 return obj;
               }
               throw err;
@@ -32,28 +31,51 @@
         } catch (e) {}
 
         window.addEventListener('error', function(event) {
+          const msg = String(event?.message || '');
+          const filename = String(event?.filename || '');
           if (
-            event.message && (
-              event.message.includes('isZerion') ||
-              event.message.includes('Cannot redefine property') ||
-              event.message.includes('ethereum') ||
-              event.message.includes('solana')
-            )
+            msg === 'Script error.' ||
+            msg.includes('isZerion') ||
+            msg.includes('Cannot redefine property') ||
+            msg.includes('ethereum') ||
+            msg.includes('solana') ||
+            filename.includes('clarity.ms') ||
+            filename.includes('disqus.com') ||
+            filename.includes('disquscdn.com')
           ) {
-            event.stopImmediatePropagation();
-            event.preventDefault();
+            if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+            if (typeof event.preventDefault === 'function') event.preventDefault();
             return true;
           }
         }, true);
 
         window.addEventListener('unhandledrejection', function(event) {
           const reasonStr = String(event?.reason?.message || event?.reason || '');
-          if (reasonStr.includes('isZerion') || reasonStr.includes('Cannot redefine property')) {
-            event.stopImmediatePropagation();
-            event.preventDefault();
+          if (
+            reasonStr.includes('isZerion') ||
+            reasonStr.includes('Cannot redefine property') ||
+            reasonStr.includes('clarity') ||
+            reasonStr.includes('disqus')
+          ) {
+            if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+            if (typeof event.preventDefault === 'function') event.preventDefault();
           }
         }, true);
       })();
+    </script>
+    <script>
+      // Microsoft Clarity tracking
+      try {
+        (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          t.onerror=function(){};
+          y=l.getElementsByTagName(r)[0];
+          if (y && y.parentNode) {
+            y.parentNode.insertBefore(t,y);
+          }
+        })(window, document, "clarity", "script", "y9a9fu8b4p");
+      } catch (e) {}
     </script>
   </head>
   <body class="bg-slate-950 text-slate-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
