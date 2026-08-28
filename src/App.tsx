@@ -5,6 +5,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { DisqusComments } from './components/DisqusComments';
+import { TalkToUsView } from './components/TalkToUsView';
 import { MarketDashboardData, CryptoAsset } from './types';
 import { Header } from './components/Header';
 import { MarketPulseBanner } from './components/MarketPulseBanner';
@@ -13,7 +14,7 @@ import { PerformanceHeatmap } from './components/PerformanceHeatmap';
 import { MarketBreadthView } from './components/MarketBreadthView';
 import { AssetDetailModal } from './components/AssetDetailModal';
 import { SnapshotExportModal } from './components/SnapshotExportModal';
-import { Table, LayoutGrid, Scale, AlertCircle, RefreshCw, Layers } from 'lucide-react';
+import { Table, LayoutGrid, Scale, AlertCircle, RefreshCw, Layers, MessageSquare } from 'lucide-react';
 
 export default function App() {
   const [data, setData] = useState<MarketDashboardData | null>(null);
@@ -23,7 +24,7 @@ export default function App() {
   const [countdown, setCountdown] = useState<number>(60);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset | null>(null);
   const [isSnapshotOpen, setIsSnapshotOpen] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'volume' | 'heatmap' | 'breadth'>('volume');
+  const [activeTab, setActiveTab] = useState<'volume' | 'heatmap' | 'breadth' | 'talk-to-us'>('volume');
   const [visitorCountry, setVisitorCountry] = useState<{ country: string; countryCode: string; flag?: string } | null>(null);
 
   const fetchMarketData = useCallback(async (isManual = false) => {
@@ -364,6 +365,19 @@ export default function App() {
                   <Scale className="w-3.5 h-3.5" />
                   <span>Market Breadth & Momentum</span>
                 </button>
+
+                <button
+                  id="tab-talk-to-us"
+                  onClick={() => setActiveTab('talk-to-us')}
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    activeTab === 'talk-to-us'
+                      ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  }`}
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>Talk to Us</span>
+                </button>
               </div>
 
               <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 font-mono">
@@ -396,14 +410,26 @@ export default function App() {
               />
             )}
 
-            {/* Disqus Community Discussion Section */}
-            <DisqusComments
-              shortname="top-crypto-tokens"
-              url="https://top-crypto-tokens-pqvo.vercel.app/"
-              identifier="crypto-pulse-main-dashboard"
-              title="Crypto Pulse - Top 10 Non-Stablecoins by Volume"
-              language="en_US"
-            />
+            {activeTab === 'talk-to-us' && (
+              <TalkToUsView
+                article={{
+                  url: 'https://top-crypto-tokens-pqvo.vercel.app/talk-to-us',
+                  id: 'crypto-pulse-talk-to-us',
+                  title: 'Talk to Us - Top Crypto Tokens',
+                }}
+              />
+            )}
+
+            {/* Disqus Community Discussion Section for Other Tabs */}
+            {activeTab !== 'talk-to-us' && (
+              <DisqusComments
+                shortname="top-crypto-tokens"
+                url="https://top-crypto-tokens-pqvo.vercel.app/"
+                identifier="crypto-pulse-main-dashboard"
+                title="Crypto Pulse - Top 10 Non-Stablecoins by Volume"
+                language="en_US"
+              />
+            )}
           </>
         )}
 
