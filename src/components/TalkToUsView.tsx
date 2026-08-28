@@ -1,41 +1,77 @@
-import React, { useMemo } from 'react';
-// @ts-ignore
-import { DiscussionEmbed, CommentCount } from 'disqus-react';
+import React, { useEffect, useState } from 'react';
 import { MessageSquare, MessageCircle, Sparkles } from 'lucide-react';
 
-interface ArticleData {
-  url: string;
-  id: string;
-  title: string;
-}
-
 interface TalkToUsProps {
-  article?: ArticleData;
+  url?: string;
+  identifier?: string;
+  title?: string;
+  shortname?: string;
 }
 
-const DEFAULT_ARTICLE: ArticleData = {
-  url: 'https://top-crypto-tokens-pqvo.vercel.app/',
-  id: 'crypto-pulse-talk-to-us',
-  title: 'Talk to Us - Top Crypto Tokens',
-};
-
-export const TalkToUsView: React.FC<TalkToUsProps> = React.memo(({
-  article = DEFAULT_ARTICLE,
+export const TalkToUsView: React.FC<TalkToUsProps> = ({
+  url = 'https://top-crypto-tokens-pqvo.vercel.app/',
+  identifier = 'top-crypto-tokens',
+  title = 'Top Crypto Tokens - Talk to Us',
+  shortname = 'top-crypto-tokens',
 }) => {
-  const currentArticle = article || DEFAULT_ARTICLE;
+  const [loadError, setLoadError] = useState(false);
 
-  const discussionConfig = useMemo(() => ({
-    url: currentArticle.url,
-    identifier: currentArticle.id,
-    title: currentArticle.title,
-    language: 'en',
-  }), [currentArticle.url, currentArticle.id, currentArticle.title]);
+  useEffect(() => {
+    setLoadError(false);
+    const win = window as any;
 
-  const commentCountConfig = useMemo(() => ({
-    url: currentArticle.url,
-    identifier: currentArticle.id,
-    title: currentArticle.title,
-  }), [currentArticle.url, currentArticle.id, currentArticle.title]);
+    // Set Disqus Configuration Variables
+    win.disqus_config = function () {
+      this.page.url = url;
+      this.page.identifier = identifier;
+      this.page.title = title;
+      this.language = 'en';
+    };
+
+    if (win.DISQUS) {
+      try {
+        win.DISQUS.reset({
+          reload: true,
+          config: win.disqus_config,
+        });
+      } catch (err) {
+        console.warn('Disqus reset notice:', err);
+      }
+    } else {
+      const scriptId = 'disqus-embed-script';
+      const existingScript = document.getElementById(scriptId);
+      if (existingScript) {
+        existingScript.remove();
+      }
+
+      try {
+        const dsq = document.createElement('script');
+        dsq.id = scriptId;
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = `https://${shortname}.disqus.com/embed.js`;
+        dsq.setAttribute('data-timestamp', String(+new Date()));
+        dsq.onerror = () => setLoadError(true);
+        (document.head || document.body).appendChild(dsq);
+      } catch (e) {
+        setLoadError(true);
+      }
+    }
+
+    // Load count.js for comment counts if not present
+    const countScriptId = 'disqus-count-script';
+    if (!document.getElementById(countScriptId)) {
+      try {
+        const countScript = document.createElement('script');
+        countScript.id = countScriptId;
+        countScript.async = true;
+        countScript.src = `https://${shortname}.disqus.com/count.js`;
+        (document.head || document.body).appendChild(countScript);
+      } catch (e) {
+        // silent catch
+      }
+    }
+  }, [url, identifier, title, shortname]);
 
   return (
     <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl text-slate-900 mt-2">
@@ -52,13 +88,13 @@ export const TalkToUsView: React.FC<TalkToUsProps> = React.memo(({
 
         <div className="text-xs font-semibold text-slate-700 flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
           <MessageCircle className="w-3.5 h-3.5 text-cyan-600" />
-          <CommentCount
-            shortname="top-crypto-tokens"
-            config={commentCountConfig}
+          <span
+            className="disqus-comment-count"
+            data-disqus-identifier={identifier}
+            data-disqus-url={url}
           >
-            {/* Placeholder Text */}
             Comments
-          </CommentCount>
+          </span>
         </div>
       </div>
 
@@ -81,7 +117,7 @@ export const TalkToUsView: React.FC<TalkToUsProps> = React.memo(({
           <Sparkles className="w-4 h-4 text-slate-500" />
           <span>
             Disqus Forum ID:{' '}
-            <span className="font-mono text-slate-600 font-semibold">top-crypto-tokens</span>
+            <span className="font-mono text-slate-600 font-semibold">{shortname}</span>
           </span>
         </div>
         <span className="text-[11px] text-emerald-600 font-semibold bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
@@ -91,12 +127,22 @@ export const TalkToUsView: React.FC<TalkToUsProps> = React.memo(({
 
       {/* Embedded Disqus Forum */}
       <div className="mt-6 min-h-[350px] w-full">
-        <DiscussionEmbed
-          shortname="top-crypto-tokens"
-          config={discussionConfig}
-        />
+        <div id="disqus_thread" className="min-h-[280px] w-full" />
+        <noscript>
+          Please enable JavaScript to view the{' '}
+          <a href="https://disqus.com/?ref_noscript" rel="nofollow">
+            comments powered by Disqus.
+          </a>
+        </noscript>
+
+        {loadError && (
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center text-xs text-slate-500 mt-4">
+            Unable to load Disqus comments directly. Please ensure third-party cookies or tracker blockers are disabled.
+          </div>
+        )}
       </div>
     </section>
   );
-});
+};
+
 

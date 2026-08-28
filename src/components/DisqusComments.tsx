@@ -12,9 +12,9 @@ interface DisqusCommentsProps {
 export function DisqusComments({
   shortname = 'top-crypto-tokens',
   url = 'https://top-crypto-tokens-pqvo.vercel.app/',
-  identifier = 'crypto-pulse-main-dashboard',
-  title = 'Crypto Pulse - Top 10 Non-Stablecoins by Volume',
-  language = 'en_US',
+  identifier = 'top-crypto-tokens',
+  title = 'Top Crypto Tokens - Community Forum',
+  language = 'en',
 }: DisqusCommentsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [loadError, setLoadError] = useState(false);

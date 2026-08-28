@@ -16,12 +16,6 @@ import { AssetDetailModal } from './components/AssetDetailModal';
 import { SnapshotExportModal } from './components/SnapshotExportModal';
 import { Table, LayoutGrid, Scale, AlertCircle, RefreshCw, Layers, MessageSquare } from 'lucide-react';
 
-const TALK_TO_US_ARTICLE = {
-  url: 'https://top-crypto-tokens-pqvo.vercel.app/talk-to-us',
-  id: 'crypto-pulse-talk-to-us',
-  title: 'Talk to Us - Top Crypto Tokens',
-};
-
 export default function App() {
   const [data, setData] = useState<MarketDashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -417,7 +411,12 @@ export default function App() {
             )}
 
             {activeTab === 'talk-to-us' && (
-              <TalkToUsView article={TALK_TO_US_ARTICLE} />
+              <TalkToUsView
+                url="https://top-crypto-tokens-pqvo.vercel.app/"
+                identifier="top-crypto-tokens"
+                title="Top Crypto Tokens"
+                shortname="top-crypto-tokens"
+              />
             )}
 
             {/* Disqus Community Discussion Section for Other Tabs */}
@@ -425,9 +424,9 @@ export default function App() {
               <DisqusComments
                 shortname="top-crypto-tokens"
                 url="https://top-crypto-tokens-pqvo.vercel.app/"
-                identifier="crypto-pulse-main-dashboard"
-                title="Crypto Pulse - Top 10 Non-Stablecoins by Volume"
-                language="en_US"
+                identifier="top-crypto-tokens"
+                title="Top Crypto Tokens"
+                language="en"
               />
             )}
           </>
