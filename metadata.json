@@ -1,0 +1,6 @@
+{
+  "name": "Crypto Market Health Dashboard",
+  "description": "Investor-focused crypto market dashboard ranking top 10 non-stablecoins by 24h volume with multi-timeframe returns and market pulse analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

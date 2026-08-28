@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crypto Pulse</title>
+    <meta name="description" content="Crypto Market Health in 30 Seconds - Top 10 Non-Stablecoins by Volume." />
+    <meta property="og:title" content="Crypto Pulse" />
+    <meta property="og:description" content="Crypto Market Health in 30 Seconds." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function() {
+        // Prevent browser extension wallet injection collision (e.g. Zerion / MetaMask redefining Object.defineProperty on window.ethereum)
+        try {
+          const origDefineProperty = Object.defineProperty;
+          Object.defineProperty = function(obj, prop, descriptor) {
+            try {
+              return origDefineProperty.call(this, obj, prop, descriptor);
+            } catch (err) {
+              if (
+                String(prop).includes('isZerion') ||
+                String(prop).includes('ethereum') ||
+                String(err?.message || '').includes('Cannot redefine property')
+              ) {
+                // Return obj safely without throwing error
+                return obj;
+              }
+              throw err;
+            }
+          };
+        } catch (e) {}
+
+        window.addEventListener('error', function(event) {
+          if (
+            event.message && (
+              event.message.includes('isZerion') ||
+              event.message.includes('Cannot redefine property') ||
+              event.message.includes('ethereum') ||
+              event.message.includes('solana')
+            )
+          ) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return true;
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(event) {
+          const reasonStr = String(event?.reason?.message || event?.reason || '');
+          if (reasonStr.includes('isZerion') || reasonStr.includes('Cannot redefine property')) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+          }
+        }, true);
+      })();
+    </script>
+  </head>
+  <body class="bg-slate-950 text-slate-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
